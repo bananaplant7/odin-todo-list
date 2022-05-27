@@ -1,10 +1,10 @@
 /***** GENERAL *****/
 
 *, *::after, *::before {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: monospace, sans-serif;
+    box-sizing: border-box;
 }
 
 button {
@@ -40,9 +40,14 @@ main {
     padding: 1rem;
 }
 
-.sidebar {
+.sidebarContainer {
     background-color: #FFD59E;
     min-width: 20vw;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar {
     word-break: break-word;
     display: flex;
     flex-direction: column;
@@ -55,6 +60,14 @@ main {
     font-size: 1.2rem;
     text-align: start;
     padding-left: 1rem;
+}
+
+.projectsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: auto;
+    padding-right: 1rem;
 }
 
 .todoContainer {
