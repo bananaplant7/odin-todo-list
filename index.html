@@ -9,46 +9,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>Todo List&nbsp; <span class="headerIcon"> ☑️</span></header>
+    <header>What Todo&nbsp; <span class="headerIcon"> ☑️</span></header>
     <main>
         <div class="sidebarContainer">
             <div class="sidebar">
                 General
-                <button class="all" id="all">All</button>
-                <button class="today" id="today">Today</button>
-                <button class="thisWeek" id="thisWeek">This Week</button>
+                <div class="generalContainer">
+                    <button class="all" id="all">All</button>
+                    <button class="today" id="today">Today</button>
+                    <button class="thisWeek" id="thisWeek">This Week</button>
+                </div>
+
                 Projects
                 <div class="projectsContainer">
                     <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>       
+                    <button class="project">Project 1</button>    
                 </div>
+
+                <button id="newProjectBtn">+ New Project</button>
             </div>
         </div>
 
-        <div class="todoContainer">Todo stuff</div>
+        <ul class="todoContainer"></ul>
     </main>
+
+    <div id="projectModal">
+        <h2>New Project</h2>
+
+        <div class="closeBtn-container">
+            <button id="projectModalCloseBtn">&times;</button>
+        </div>
+
+        <form action="" method="post" id="projectForm">
+            <input type="text" placeholder="Your Project Name">
+            <button type="submit">Add</button>
+        </form>
+    </div>
+    <div id="overlay"></div>
+
 </body>
 </html>
