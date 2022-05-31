@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +9,7 @@
     <script src="main.js" defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <header>What Todo&nbsp; <span class="headerIcon"> ☑️</span></header>
     <main>
@@ -21,10 +23,7 @@
                 </div>
 
                 Projects
-                <div class="projectsContainer">
-                    <button class="project">Project 1</button>
-                    <button class="project">Project 1</button>    
-                </div>
+                <div id="projectsContainer"></div>
 
                 <button id="newProjectBtn">+ New Project</button>
             </div>
@@ -36,16 +35,18 @@
     <div id="projectModal">
         <h2>New Project</h2>
 
-        <div class="closeBtn-container">
-            <button id="projectModalCloseBtn">&times;</button>
-        </div>
+        <button id="projectModalCloseBtn">&times;</button>
 
         <form action="" method="post" id="projectForm">
-            <input type="text" placeholder="Your Project Name">
-            <button type="submit">Add</button>
+            <div>
+                <input type="text" placeholder="Your Project Name" id="projectName" required>
+                <button type="submit" id="addProjectBtn">Add</button>
+            </div>
+
         </form>
     </div>
     <div id="overlay"></div>
 
 </body>
+
 </html>
