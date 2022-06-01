@@ -1,13 +1,5 @@
 const todoContainer = document.querySelector('.todoContainer');
 
-const newProjectBtn = document.querySelector('#newProjectBtn');
-const projectModal = document.querySelector('#projectModal');
-const overlay = document.querySelector('#overlay');
-const projectForm = document.querySelector('#projectForm');
-const projectModalCloseBtn = document.querySelector('#projectModalCloseBtn');
-const projectName = document.querySelector('#projectName');
-const addProjectBtn = document.querySelector('#addProjectBtn');
-
 const projectsContainer = document.querySelector('#projectsContainer');
 
 
@@ -109,12 +101,25 @@ function clearProjects() {
     }
 }
 
-// <button class="project">Project 1</button>
+/* <button class="project" id='project.title'>
+    <div class="projectTitle">project.title</div> <button class="deleteProjectBtn">&times;</button>
+   </button> */
 function displayProjects() {
     projects.forEach(project => {
         let btn = document.createElement('button');
         btn.classList.add('project');
-        btn.textContent = project.title;
+        btn.id = project.title;
+
+        let projectTitle = document.createElement('div');
+        projectTitle.classList.add('projectTitle');
+        projectTitle.textContent = project.title;
+
+        let deleteProjectBtn = document.createElement('button');
+        deleteProjectBtn.classList.add('deleteProjectBtn');
+        deleteProjectBtn.textContent = '\u00d7';
+
+        btn.appendChild(projectTitle);
+        btn.appendChild(deleteProjectBtn);
 
         projectsContainer.appendChild(btn);
     });
@@ -124,49 +129,98 @@ function clearAndDisplayProjects() {
     clearProjects();
     displayProjects();
 }
+function onClickDeleteProject() {
+
+}
+projectsContainer.addEventListener('click', (e) => {
+    let target = e.target;
+
+    if (target.classList[0] === 'deleteProjectBtn') {
+        let parent = target.parentElement;
+        let id = parent.id;
+        let index = projects.findIndex(x => x.title === id);
+        projects.splice(index, 1);
+
+        clearAndDisplayProjects();
+    }
+});
+
 
 clearAndDisplayProjects();
 //#endregion
 
 
-//#region // MODAL STUFF
-function openProjectModal() {
-    if (projectModal == null) {
-        return;
-    } else {
-        projectModal.classList.add('active');
-        overlay.classList.add('active');
+
+const projectModalStuff = (() => {
+    // SELECTORS
+    const newProjectBtn = document.querySelector('#newProjectBtn');
+    const projectModal = document.querySelector('#projectModal');
+    const overlay = document.querySelector('#overlay');
+    const projectModalCloseBtn = document.querySelector('#projectModalCloseBtn');
+    const projectName = document.querySelector('#projectName');
+    const addProjectBtn = document.querySelector('#addProjectBtn');
+
+    // METHODS
+    function openProjectModal() {
+        if (projectModal == null) {
+            return;
+        } else {
+            projectModal.classList.add('active');
+            overlay.classList.add('active');
+        }
     }
-}
 
-function closeProjectModal() {
-    if (projectModal == null) {
-        return;
-    } else {
-        projectModal.classList.remove('active');
-        overlay.classList.remove('active');
+    function closeProjectModal() {
+        if (projectModal == null) {
+            return;
+        } else {
+            projectModal.classList.remove('active');
+            overlay.classList.remove('active');
+        }
     }
-}
 
-newProjectBtn.addEventListener('click', () => {
-    openProjectModal();
-});
+    // consumes array of strings & string and produces 
+    // true or false to if that string is unique
+    function checkDuplicate(array, title) {
+        return (array.indexOf(title) >= 0) ? true : false;
+    }
 
-projectModalCloseBtn.addEventListener('click', () => {
-    closeProjectModal();
-});
+    // EVENT LISTENERS
+    newProjectBtn.addEventListener('click', () => {
+        openProjectModal();
+    });
 
-overlay.addEventListener('click', () => {
-    closeProjectModal();
-});
+    projectModalCloseBtn.addEventListener('click', () => {
+        closeProjectModal();
+    });
 
-addProjectBtn.addEventListener('click', e => {
-    e.preventDefault();
-    if (projectName.value === '') { return; }
-    let newProject = createProject(projectName.value);
-    addProject(newProject);
-    clearAndDisplayProjects();
-    projectName.value = '';
-    closeProjectModal();
-});
-//#endregion
+    overlay.addEventListener('click', () => {
+        closeProjectModal();
+    });
+
+    // If title non-empty & non-duplicate, create new project & add to  
+    // projects[], clear & display projects, clear form, close modal
+    addProjectBtn.addEventListener('click', e => {
+        e.preventDefault();
+
+        let projectTitle = projectName.value;
+
+        if (projectTitle === '') {
+            alert("Project name can't be empty");
+        } else if (checkDuplicate(projects.map(project => project.title), projectTitle)) {
+            alert("Project name must be unique");
+        } else {
+            let newProject = createProject(projectName.value);
+            addProject(newProject);
+            clearAndDisplayProjects();
+            projectName.value = '';
+            closeProjectModal();
+        }
+    });
+
+    return {
+        openProjectModal,
+        closeProjectModal,
+        checkDuplicate,
+    };
+})();
