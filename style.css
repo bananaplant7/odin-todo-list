@@ -73,6 +73,11 @@ main {
     overflow: auto;
 }
 
+.project {
+    display: flex;
+    justify-content: space-between;
+}
+
 #newProjectBtn {
     background-color: lightgreen;
     text-align: center;
