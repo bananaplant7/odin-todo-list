@@ -2,6 +2,9 @@ const todoContainer = document.querySelector('.todoContainer');
 
 const projectsContainer = document.querySelector('#projectsContainer');
 
+const LOCAL_STORAGE_PROJECT_KEY = 'my.projects';
+let projects = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECT_KEY)) || [];
+
 
 //#region // TODO STUFF
 const createTodo = (title, desc, date, complete) => {
@@ -83,17 +86,13 @@ const createProject = (title) => {
     };
 };
 
-let project1 = createProject('Project 1');
-let project2 = createProject('Project 2');
-
-let projects = [];
-
 function addProject(project) {
     projects.push(project);
 }
 
-addProject(project1);
-addProject(project2);
+function save() {
+    localStorage.setItem(LOCAL_STORAGE_PROJECT_KEY, JSON.stringify(projects));
+}
 
 function clearProjects() {
     while (projectsContainer.firstChild) {
@@ -125,28 +124,27 @@ function displayProjects() {
     });
 }
 
-function clearAndDisplayProjects() {
+function render() {
+    save();
     clearProjects();
     displayProjects();
 }
-function onClickDeleteProject() {
 
-}
 projectsContainer.addEventListener('click', (e) => {
+    // find the id of parent -> index number -> modify array
     let target = e.target;
+    let parent = target.parentElement;
+    let id = parent.id;
+    let index = projects.findIndex(x => x.title === id);
 
     if (target.classList[0] === 'deleteProjectBtn') {
-        let parent = target.parentElement;
-        let id = parent.id;
-        let index = projects.findIndex(x => x.title === id);
         projects.splice(index, 1);
-
-        clearAndDisplayProjects();
+        render();
     }
 });
 
 
-clearAndDisplayProjects();
+render();
 //#endregion
 
 
@@ -180,7 +178,7 @@ const projectModalStuff = (() => {
     }
 
     // consumes array of strings & string and produces 
-    // true or false to if that string is unique
+    // true or false to if that string is a duplicate
     function checkDuplicate(array, title) {
         return (array.indexOf(title) >= 0) ? true : false;
     }
@@ -212,7 +210,7 @@ const projectModalStuff = (() => {
         } else {
             let newProject = createProject(projectName.value);
             addProject(newProject);
-            clearAndDisplayProjects();
+            render();
             projectName.value = '';
             closeProjectModal();
         }
