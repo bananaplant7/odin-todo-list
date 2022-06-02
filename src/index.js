@@ -6,6 +6,7 @@ const LOCAL_STORAGE_PROJECT_KEY = 'my.projects';
 let projects = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECT_KEY)) || [];
 
 
+
 //#region // TODO STUFF
 const createTodo = (title, desc, date, complete) => {
     return {
@@ -20,21 +21,24 @@ let all = { todos: [] };
 let today = { todos: [] };
 let thisWeek = { todos: [] };
 
-function addTodo(tab, todo) {
-    tab.todos.push(todo);
+
+// for now, just keep it as all, later currentTab will be decided by event listeners to sidebar
+let currentTab = all  
+
+
+function addTodo(todo) {
+    currentTab.todos.push(todo);
 }
 
-addTodo(all, homework);
-addTodo(all, homework2);
+addTodo(homework);
+addTodo(homework2);
 
 
-// function clearTodos(element) {
-//     while (element.firstChild) {
-//         element.removeChild(element.firstChild)
-//     }
-// }
-
-
+function clearTodos() {
+    while (todoContainer.firstChild) {
+        todoContainer.removeChild(todoContainer.firstChild)
+    }
+}
 
 /*
 <li class="todo">
@@ -44,9 +48,8 @@ addTodo(all, homework2);
     <div class="date">Date</div>
 </li>
 */
-// accepts tab and creates a li for each todo of that tab
-function displayTodos(tab) {
-    tab.todos.forEach(todo => {
+function displayTodos() {
+    currentTab.todos.forEach(todo => {
         let li = document.createElement('li');
         li.classList.add('todo');
 
@@ -75,7 +78,12 @@ function displayTodos(tab) {
     });
 }
 
-displayTodos(all);
+function clearAndDisplayTodos() {
+    clearTodos()
+    displayTodos()
+}
+
+clearAndDisplayTodos();
 //#endregion 
 
 
@@ -106,7 +114,7 @@ function clearProjects() {
 function displayProjects() {
     projects.forEach(project => {
         let btn = document.createElement('button');
-        btn.classList.add('project');
+        btn.classList.add('project', 'tab');
         btn.id = project.title;
 
         let projectTitle = document.createElement('div');
@@ -144,7 +152,7 @@ projectsContainer.addEventListener('click', (e) => {
 });
 
 
-render();
+render(); 
 //#endregion
 
 
@@ -219,6 +227,92 @@ const projectModalStuff = (() => {
     return {
         openProjectModal,
         closeProjectModal,
+        checkDuplicate,
+    };
+})();
+
+const todoModalStuff = (() => {
+    // SELECTORS
+    const newTodoBtn = document.querySelector('#newTodoBtn');
+    const todoModal = document.querySelector('#todoModal');
+    const overlay = document.querySelector('#overlay');
+    const todoModalCloseBtn = document.querySelector('#todoModalCloseBtn');
+    const todoName = document.querySelector('#todoName');
+    const todoDetails = document.querySelector('#todoDetails');
+    const todoDate = document.querySelector('#todoDate');
+    const addTodoBtn = document.querySelector('#addTodoBtn');
+
+    // METHODS
+    function openTodoModal() {
+        if (todoModal == null) {
+            return;
+        } else {
+            todoModal.classList.add('active');
+            overlay.classList.add('active');
+        }
+    }
+
+    function closeTodoModal() {
+        if (todoModal == null) {
+            return;
+        } else {
+            todoModal.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+    }
+
+    // consumes array of strings & string and produces 
+    // true or false to if that string is a duplicate
+    function checkDuplicate(array, title) {
+        return (array.indexOf(title) >= 0) ? true : false;
+    }
+
+    // EVENT LISTENERS
+    newTodoBtn.addEventListener('click', () => {
+        openTodoModal();
+    });
+
+    todoModalCloseBtn.addEventListener('click', () => {
+        closeTodoModal();
+    });
+
+    overlay.addEventListener('click', () => {
+        closeTodoModal();
+    });
+
+    // let homework = createTodo('Homework', 'Do math & physics hw', '2050-05-29', complete = false);
+    addTodoBtn.addEventListener('click', e => {
+        e.preventDefault();
+
+        // todoName.value;
+        // todoDetails.value;
+        // todoDate.value;
+
+        if (todoName.value === '') {
+            alert("Todo name can't be empty");
+        } else if (checkDuplicate(currentTab.todos.map(todo => todo.title), todoName.value)) {
+            alert("Todo name must be unique");
+        } else {
+            let newTodo = 
+            createTodo(
+                todoName.value, 
+                todoDetails.value, 
+                // below is just to turn "2022-06-02" -> 'Thu Jun 02 2022'
+                new Date(todoDate.value).toDateString(), 
+                complete = false
+            );
+            addTodo(newTodo);
+            clearAndDisplayTodos();
+            todoName.value = '';
+            todoDetails.value = '';
+            todoDate.value = '';
+            closeTodoModal();
+        }
+    });
+
+    return {
+        openTodoModal,
+        closeTodoModal,
         checkDuplicate,
     };
 })();

@@ -17,9 +17,9 @@
             <div class="sidebar">
                 General
                 <div class="generalContainer">
-                    <button class="all" id="all">All</button>
-                    <button class="today" id="today">Today</button>
-                    <button class="thisWeek" id="thisWeek">This Week</button>
+                    <button class="tab" id="all">All</button>
+                    <button class="tab" id="today">Today</button>
+                    <button class="tab" id="thisWeek">This Week</button>
                 </div>
 
                 Projects
@@ -33,18 +33,35 @@
     </main>
 
     <div id="projectModal">
-        <h2>New Project</h2>
+        <h2 id="projectModalTitle">New Project</h2>
 
         <button id="projectModalCloseBtn">&times;</button>
 
         <form action="" method="post" id="projectForm">
-            <div>
+            <div class="formInputs">
                 <input type="text" placeholder="Your Project Name" id="projectName" required>
                 <button type="submit" id="addProjectBtn">Add</button>
             </div>
 
         </form>
     </div>
+
+    <div id="todoModal">
+        <h2 id="todoModalTitle">New Todo</h2>
+
+        <button id="todoModalCloseBtn">&times;</button>
+
+        <form action="" method="post" id="todoForm">
+            <div class="formInputs">
+                <input type="text" placeholder="Todo name" id="todoName" required>
+                <input type="text" placeholder="Todo details" id="todoDetails" required>
+                <input type="date" id="todoDate" required>
+                <button type="submit" id="addTodoBtn">Add</button>
+            </div>
+        </form>
+    </div>
+
+    <button id="newTodoBtn">+ New Todo</button>
     <div id="overlay"></div>
 
 </body>
