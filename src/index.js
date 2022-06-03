@@ -2,10 +2,10 @@ const todoContainer = document.querySelector('.todoContainer');
 
 const projectsContainer = document.querySelector('#projectsContainer');
 
+const sidebar = document.querySelector('.sidebar');
+
 const LOCAL_STORAGE_PROJECT_KEY = 'my.projects';
 let projects = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECT_KEY)) || [];
-
-
 
 //#region // TODO STUFF
 const createTodo = (title, desc, date, complete) => {
@@ -14,17 +14,14 @@ const createTodo = (title, desc, date, complete) => {
     };
 };
 
-let homework = createTodo('Homework', 'Do math & physics hw', '2050-05-29', complete = false);
-let homework2 = createTodo('Homework2', 'Do bio hw', '2050-05-29', complete = false);
+let homework = createTodo('Homework', 'Do math & physics hw', 'Sun May 29 2050', complete = false);
+let homework2 = createTodo('Homework2', 'Do bio hw', 'Sun May 29 2050', complete = true);
 
-let all = { todos: [] };
-let today = { todos: [] };
-let thisWeek = { todos: [] };
+let all = { title: 'all', todos: [] };
+let today = { title: 'today', todos: [] };
+let thisWeek = { title: 'thisWeek', todos: [] };
 
-
-// for now, just keep it as all, later currentTab will be decided by event listeners to sidebar
-let currentTab = all  
-
+let currentTab = all;
 
 function addTodo(todo) {
     currentTab.todos.push(todo);
@@ -36,7 +33,7 @@ addTodo(homework2);
 
 function clearTodos() {
     while (todoContainer.firstChild) {
-        todoContainer.removeChild(todoContainer.firstChild)
+        todoContainer.removeChild(todoContainer.firstChild);
     }
 }
 
@@ -69,6 +66,11 @@ function displayTodos() {
         date.classList.add('date');
         date.textContent = todo.date;
 
+        if (todo.complete == true) {
+            li.classList.add('checked');
+            checkbox.checked = true
+        }
+
         li.appendChild(checkbox);
         li.appendChild(title);
         li.appendChild(desc);
@@ -79,8 +81,8 @@ function displayTodos() {
 }
 
 function clearAndDisplayTodos() {
-    clearTodos()
-    displayTodos()
+    clearTodos();
+    displayTodos();
 }
 
 clearAndDisplayTodos();
@@ -114,7 +116,8 @@ function clearProjects() {
 function displayProjects() {
     projects.forEach(project => {
         let btn = document.createElement('button');
-        btn.classList.add('project', 'tab');
+        btn.classList.add('tab');
+        btn.classList.add('project');
         btn.id = project.title;
 
         let projectTitle = document.createElement('div');
@@ -139,7 +142,7 @@ function render() {
 }
 
 projectsContainer.addEventListener('click', (e) => {
-    // find the id of parent -> index number -> modify array
+    // find the id of parent -> index number -> modify array -> render
     let target = e.target;
     let parent = target.parentElement;
     let id = parent.id;
@@ -150,11 +153,7 @@ projectsContainer.addEventListener('click', (e) => {
         render();
     }
 });
-
-
-render(); 
 //#endregion
-
 
 
 const projectModalStuff = (() => {
@@ -290,17 +289,18 @@ const todoModalStuff = (() => {
 
         if (todoName.value === '') {
             alert("Todo name can't be empty");
+            // map is returning an array of names
         } else if (checkDuplicate(currentTab.todos.map(todo => todo.title), todoName.value)) {
             alert("Todo name must be unique");
         } else {
-            let newTodo = 
-            createTodo(
-                todoName.value, 
-                todoDetails.value, 
-                // below is just to turn "2022-06-02" -> 'Thu Jun 02 2022'
-                new Date(todoDate.value).toDateString(), 
-                complete = false
-            );
+            let newTodo =
+                createTodo(
+                    todoName.value,
+                    todoDetails.value,
+                    // below is just to turn "2022-06-02" -> 'Thu Jun 02 2022'
+                    new Date(todoDate.value.split('-')).toDateString(),
+                    complete = false
+                );
             addTodo(newTodo);
             clearAndDisplayTodos();
             todoName.value = '';
@@ -316,3 +316,29 @@ const todoModalStuff = (() => {
         checkDuplicate,
     };
 })();
+
+// let projects = [{title: 'a', todos: Array(0)}, {title: 'b', todos: Array(0)}]
+// projects.findIndex(project => project.title == 'b')
+render()
+sidebar.addEventListener('click', (e) => {
+    let target = e.target
+    let id = target.id
+
+    if (target.classList[0] === 'tab') {
+        if (target.classList[1] === 'project') {
+            // this returns the project that matches the id
+            let selectedProj = projects.filter(project => (project.title === id))[0]
+            currentTab = selectedProj   
+        } else {
+            if (id === 'all') {
+                currentTab = all
+            } else if (id === 'today') {
+                currentTab = today
+            } else {
+                currentTab = thisWeek
+            }
+        }
+        clearAndDisplayTodos()
+    }
+})
+
