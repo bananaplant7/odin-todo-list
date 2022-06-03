@@ -1,4 +1,4 @@
-/***** GENERAL *****/
+ /*#region*/ /***** GENERAL *****/
 
 *, *::after, *::before {
     margin: 0;
@@ -11,9 +11,10 @@ button {
     cursor: pointer;
 }
 
-/**********/
+/*#endregion*/ /**********/
 
-/***** HEADER, SIDEBAR, TODO CONTAINER *****/
+
+/*#region*/ /***** HEADER, SIDEBAR, TODO CONTAINER *****/
 
 header {
     background-color: #888dda;
@@ -73,7 +74,7 @@ main {
     overflow: auto;
 }
 
-.project {
+.tab {
     display: flex;
     justify-content: space-between;
 }
@@ -98,14 +99,21 @@ main {
 #newProjectBtn:hover, #newTodoBtn:hover {
     background: rgb(174, 228, 174);
 }
+/*#endregion*/ /**********/
 
 
+/*#region*/ /***** PROJECTS  *****/
+
+/* when trying to set currentTab, need to access  
+tab class & ignore the projectTitle class */
+.projectTitle {
+    pointer-events: none; 
+}
+
+/*#endregion*/ /**********/ 
 
 
-/**********/
-
-
-/***** TODOS  *****/
+/*#region*/ /***** TODOS  *****/
 
 .todoContainer {
     background-color: #d7e7fa;
@@ -130,11 +138,10 @@ main {
     text-decoration: line-through;
 }
 
-/**********/
+/*#endregion*/ /**********/
 
 
-
-/***** POPUP MODALS  *****/
+/*#region*/ /***** POPUP MODALS  *****/
 
 #projectModal, #todoModal {
     position: fixed;
@@ -148,10 +155,6 @@ main {
     background-color: white;
     padding: 2rem;
 }
-
-/* #todoModal {
-    transform: translate(-50%, -50%) scale(1);
-} */
 
 #projectModal.active, #todoModal.active {
     transform: translate(-50%, -50%) scale(1);
@@ -206,4 +209,4 @@ main {
     pointer-events: all;
 }
 
-/**********/
+/*#endregion*/ /**********/
