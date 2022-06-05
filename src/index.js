@@ -49,7 +49,7 @@ function displayTodos() {
     currentTab.todos.forEach(todo => {
         let li = document.createElement('li');
         li.classList.add('todo');
-        li.id = todo.title
+        li.id = todo.title;
 
         let checkbox = document.createElement('input');
         checkbox.type = "checkbox";
@@ -90,17 +90,17 @@ clearAndDisplayTodos();
 
 todoContainer.addEventListener('click', (e) => {
     let targetType = e.target.classList[0];
-    let targetID = e.target.parentElement.id
+    let targetID = e.target.parentElement.id;
     // id allows us to target the specific todo in the array which  
     // we can modify and display these modifications
-    let targetTodo = currentTab.todos.filter(todo => (todo.title == targetID))[0]
+    let targetTodo = currentTab.todos.filter(todo => (todo.title == targetID))[0];
 
     if (targetType === 'checkbox') {
         // if todo complete, set it to incomplete and vice versa
-        targetTodo.complete ? targetTodo.complete = false : targetTodo.complete = true
-        clearAndDisplayTodos()
+        targetTodo.complete ? targetTodo.complete = false : targetTodo.complete = true;
+        clearAndDisplayTodos();
     }
-})
+});
 
 //#endregion 
 
@@ -306,25 +306,33 @@ const todoModalStuff = (() => {
 
         if (todoName.value === '') {
             alert("Todo name can't be empty");
-        // map is returning an array of names
+            // map is returning an array of names
         } else if (checkDuplicate(currentTab.todos.map(todo => todo.title), todoName.value)) {
             alert("Todo name must be unique");
         } else {
             // using var here or else date is not accessible
             if (todoDate.value === '') {
-                var date = 'No date'
+                var date = 'No date';
             } else {
                 // to turn "2022-06-02" -> 'Thu Jun 02 2022'
-                var date = new Date(todoDate.value.split('-')).toDateString()
+                var date = new Date(todoDate.value.split('-')).toDateString();
             }
             let newTodo =
-            createTodo(
-                todoName.value,
-                todoDetails.value,
-                date,
-                complete = false
-            );
-            addTodo(newTodo);
+                createTodo(
+                    todoName.value,
+                    todoDetails.value,
+                    date,
+                    complete = false
+                );
+
+            // when add new todo, add to current tab & all tab (bc all tab can
+            // access ALL todos). If we're in the all tab, just add it once ofc.
+            if (currentTab === 'all') {
+                addTodo(newTodo);
+            } else {
+                addTodo(newTodo);
+                all.todos.push(newTodo);
+            }
             clearAndDisplayTodos();
             todoName.value = '';
             todoDetails.value = '';
@@ -351,17 +359,19 @@ sidebar.addEventListener('click', (e) => {
             // this returns the project that matches the id
             let selectedProj = projects.filter(project => (project.title === id))[0];
             currentTab = selectedProj;
+            newTodoBtn.classList.remove('hidden');
         } else {
             if (id === 'all') {
                 currentTab = all;
+                newTodoBtn.classList.remove('hidden');
             } else if (id === 'today') {
                 currentTab = today;
+                newTodoBtn.classList.add('hidden');
             } else {
                 currentTab = thisWeek;
+                newTodoBtn.classList.add('hidden');
             }
         }
         clearAndDisplayTodos();
     }
 });
-
-console.log(currentTab)
