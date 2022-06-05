@@ -49,6 +49,7 @@ function displayTodos() {
     currentTab.todos.forEach(todo => {
         let li = document.createElement('li');
         li.classList.add('todo');
+        li.id = todo.title
 
         let checkbox = document.createElement('input');
         checkbox.type = "checkbox";
@@ -86,6 +87,21 @@ function clearAndDisplayTodos() {
 }
 
 clearAndDisplayTodos();
+
+todoContainer.addEventListener('click', (e) => {
+    let targetType = e.target.classList[0];
+    let targetID = e.target.parentElement.id
+    // id allows us to target the specific todo in the array which  
+    // we can modify and display these modifications
+    let targetTodo = currentTab.todos.filter(todo => (todo.title == targetID))[0]
+
+    if (targetType === 'checkbox') {
+        // if todo complete, set it to incomplete and vice versa
+        targetTodo.complete ? targetTodo.complete = false : targetTodo.complete = true
+        clearAndDisplayTodos()
+    }
+})
+
 //#endregion 
 
 
@@ -140,6 +156,8 @@ function render() {
     clearProjects();
     displayProjects();
 }
+
+render();
 
 projectsContainer.addEventListener('click', (e) => {
     // find the id of parent -> index number -> modify array -> render
@@ -324,7 +342,6 @@ const todoModalStuff = (() => {
 
 // let projects = [{title: 'a', todos: Array(0)}, {title: 'b', todos: Array(0)}]
 // projects.findIndex(project => project.title == 'b')
-render();
 sidebar.addEventListener('click', (e) => {
     let target = e.target;
     let id = target.id;
@@ -347,3 +364,4 @@ sidebar.addEventListener('click', (e) => {
     }
 });
 
+console.log(currentTab)
