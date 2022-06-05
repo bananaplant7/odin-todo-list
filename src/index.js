@@ -68,7 +68,7 @@ function displayTodos() {
 
         if (todo.complete == true) {
             li.classList.add('checked');
-            checkbox.checked = true
+            checkbox.checked = true;
         }
 
         li.appendChild(checkbox);
@@ -279,7 +279,6 @@ const todoModalStuff = (() => {
         closeTodoModal();
     });
 
-    // let homework = createTodo('Homework', 'Do math & physics hw', '2050-05-29', complete = false);
     addTodoBtn.addEventListener('click', e => {
         e.preventDefault();
 
@@ -289,18 +288,24 @@ const todoModalStuff = (() => {
 
         if (todoName.value === '') {
             alert("Todo name can't be empty");
-            // map is returning an array of names
+        // map is returning an array of names
         } else if (checkDuplicate(currentTab.todos.map(todo => todo.title), todoName.value)) {
             alert("Todo name must be unique");
         } else {
+            // using var here or else date is not accessible
+            if (todoDate.value === '') {
+                var date = 'No date'
+            } else {
+                // to turn "2022-06-02" -> 'Thu Jun 02 2022'
+                var date = new Date(todoDate.value.split('-')).toDateString()
+            }
             let newTodo =
-                createTodo(
-                    todoName.value,
-                    todoDetails.value,
-                    // below is just to turn "2022-06-02" -> 'Thu Jun 02 2022'
-                    new Date(todoDate.value.split('-')).toDateString(),
-                    complete = false
-                );
+            createTodo(
+                todoName.value,
+                todoDetails.value,
+                date,
+                complete = false
+            );
             addTodo(newTodo);
             clearAndDisplayTodos();
             todoName.value = '';
@@ -319,26 +324,26 @@ const todoModalStuff = (() => {
 
 // let projects = [{title: 'a', todos: Array(0)}, {title: 'b', todos: Array(0)}]
 // projects.findIndex(project => project.title == 'b')
-render()
+render();
 sidebar.addEventListener('click', (e) => {
-    let target = e.target
-    let id = target.id
+    let target = e.target;
+    let id = target.id;
 
     if (target.classList[0] === 'tab') {
         if (target.classList[1] === 'project') {
             // this returns the project that matches the id
-            let selectedProj = projects.filter(project => (project.title === id))[0]
-            currentTab = selectedProj   
+            let selectedProj = projects.filter(project => (project.title === id))[0];
+            currentTab = selectedProj;
         } else {
             if (id === 'all') {
-                currentTab = all
+                currentTab = all;
             } else if (id === 'today') {
-                currentTab = today
+                currentTab = today;
             } else {
-                currentTab = thisWeek
+                currentTab = thisWeek;
             }
         }
-        clearAndDisplayTodos()
+        clearAndDisplayTodos();
     }
-})
+});
 
