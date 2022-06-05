@@ -11,6 +11,10 @@ button {
     cursor: pointer;
 }
 
+button:hover {
+    opacity: 0.7;
+}
+
 /*#endregion*/ /**********/
 
 
@@ -95,10 +99,10 @@ main {
     right: 1rem;
 }
 
+#newTodoBtn.hidden {
+    display: none;
+} 
 
-#newProjectBtn:hover, #newTodoBtn:hover {
-    background: rgb(174, 228, 174);
-}
 /*#endregion*/ /**********/
 
 
