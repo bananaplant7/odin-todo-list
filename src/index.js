@@ -5,7 +5,9 @@ const projectsContainer = document.querySelector('#projectsContainer');
 const sidebar = document.querySelector('.sidebar');
 
 const LOCAL_STORAGE_PROJECT_KEY = 'my.projects';
+const LOCAL_STORAGE_ALL_KEY = 'my.allTab';
 let projects = JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECT_KEY)) || [];
+let all = JSON.parse(localStorage.getItem(LOCAL_STORAGE_ALL_KEY)) || { title: 'all', todos: [] };
 
 //#region // TODO STUFF
 const createTodo = (title, desc, date, complete) => {
@@ -14,10 +16,10 @@ const createTodo = (title, desc, date, complete) => {
     };
 };
 
-let homework = createTodo('Homework', 'Do math & physics hw', 'Sun May 29 2050', complete = false);
-let homework2 = createTodo('Homework2', 'Do bio hw', 'Sun May 29 2050', complete = true);
+// let homework = createTodo('Homework', 'Do math & physics hw', 'Sun May 29 2050', complete = false);
+// let homework2 = createTodo('Homework2', 'Do bio hw', 'Sun May 29 2050', complete = true);
 
-let all = { title: 'all', todos: [] };
+// let all = { title: 'all', todos: [] };
 let today = { title: 'today', todos: [] };
 let thisWeek = { title: 'thisWeek', todos: [] };
 
@@ -27,8 +29,13 @@ function addTodo(todo) {
     currentTab.todos.push(todo);
 }
 
-addTodo(homework);
-addTodo(homework2);
+// addTodo(homework);
+// addTodo(homework2);
+
+function saveAllTab() {
+    localStorage.setItem(LOCAL_STORAGE_ALL_KEY, JSON.stringify(all));
+}
+
 
 
 function clearTodos() {
@@ -82,6 +89,7 @@ function displayTodos() {
 }
 
 function clearAndDisplayTodos() {
+    saveAllTab();
     clearTodos();
     displayTodos();
 }
@@ -333,6 +341,7 @@ const todoModalStuff = (() => {
                 addTodo(newTodo);
                 all.todos.push(newTodo);
             }
+            save();
             clearAndDisplayTodos();
             todoName.value = '';
             todoDetails.value = '';
