@@ -63,8 +63,6 @@ main {
     background-color: transparent;
     border: none;
     font-size: 1.2rem;
-    text-align: start;
-    padding-left: 1rem;
 }
 
 .generalContainer, #projectsContainer {
@@ -81,6 +79,15 @@ main {
 .tab {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+
+}
+
+.tab.current {
+    background: paleturquoise;
+    border-radius: 4px;
 }
 
 #newProjectBtn, #newTodoBtn {
@@ -128,6 +135,7 @@ tab class & ignore the projectTitle class */
 .todo {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 2rem;
 }
 
@@ -140,6 +148,12 @@ tab class & ignore the projectTitle class */
 .todo.checked {
     opacity: 0.5;
     text-decoration: line-through;
+}
+
+.deleteTodoBtn {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
 }
 
 /*#endregion*/ /**********/
