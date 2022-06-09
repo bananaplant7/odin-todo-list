@@ -17,10 +17,6 @@ const createTodo = (title, desc, date, complete, origin) => {
     };
 };
 
-// let homework = createTodo('Homework', 'Do math & physics hw', 'Sun May 29 2050', complete = false);
-// let homework2 = createTodo('Homework2', 'Do bio hw', 'Sun May 29 2050', complete = true);
-
-// let all = { title: 'all', todos: [] };
 let today = { title: 'today', todos: [] };
 let thisWeek = { title: 'thisWeek', todos: [] };
 
@@ -30,14 +26,15 @@ function addTodo(todo) {
     currentTab.todos.push(todo);
 }
 
-// addTodo(homework);
-// addTodo(homework2);
+function editTodo(todo, newTitle, newDesc, newDate) {
+    todo.title = newTitle
+    todo.desc = newDesc
+    todo.date = newDate
+}
 
 function saveAllTab() {
     localStorage.setItem(LOCAL_STORAGE_ALL_KEY, JSON.stringify(all));
 }
-
-
 
 function clearTodos() {
     while (todoContainer.firstChild) {
@@ -80,16 +77,20 @@ function displayTodos() {
             checkbox.checked = true;
         }
 
+        let editTodoBtn = document.createElement('button');
+        editTodoBtn.classList.add('editTodoBtn');
+        editTodoBtn.textContent = '\u270d'; 
+
         let deleteTodoBtn = document.createElement('button');
         deleteTodoBtn.classList.add('deleteTodoBtn');
-        deleteTodoBtn.textContent = '\u00d7';
+        deleteTodoBtn.textContent = '\u{1F5D1}';
 
         li.appendChild(checkbox);
         li.appendChild(title);
         li.appendChild(desc);
         li.appendChild(date);
+        li.appendChild(editTodoBtn)
         li.appendChild(deleteTodoBtn)
-
         todoContainer.appendChild(li);
     });
 }
@@ -117,6 +118,20 @@ todoContainer.addEventListener('click', (e) => {
         renderTodos();
     }
 
+    if (targetType === 'editTodoBtn') {
+
+        // repurpose dates so input type='Date' can accept them
+        // • 'No date' = '' 
+        // • 'Thu Jun 02 2022' = '2022-06-02'
+        if (targetTodo.date === 'No date') {
+            var date = '';
+        } else {
+            var date = new Date(targetTodo.date).toISOString().split('T')[0]
+        }
+        todoModalStuff.editingTodo(targetTodo.title, targetTodo.desc, date)
+
+    }
+
     // if in all tab, remove from all tab. if not, remove from origin tab and all tab
     if (targetType === 'deleteTodoBtn') {
         let targetOrigin = targetTodo.origin
@@ -130,20 +145,12 @@ todoContainer.addEventListener('click', (e) => {
         }
         all.todos.splice(indexInAllTab,1)
         renderTodos();
-       
     }
-});
 
-function deleteTodo(origin, ID) {
-    let indexInOrigin = origin.todos.findIndex(todo => (todo.title == ID))
-    originTab.splice(indexInOrigin, 1)
+
+
     
-
-
-}
-
-
-
+});
 //#endregion 
 
 
@@ -184,7 +191,7 @@ function displayProjects() {
 
         let deleteProjectBtn = document.createElement('button');
         deleteProjectBtn.classList.add('deleteProjectBtn');
-        deleteProjectBtn.textContent = '\u00d7';
+        deleteProjectBtn.textContent = '\u{1F5D1}';
 
         btn.appendChild(projectTitle);
         btn.appendChild(deleteProjectBtn);
@@ -241,6 +248,7 @@ const projectModalStuff = (() => {
         } else {
             projectModal.classList.remove('active');
             overlay.classList.remove('active');
+            projectName.value = ''
         }
     }
 
@@ -295,11 +303,13 @@ const todoModalStuff = (() => {
     const newTodoBtn = document.querySelector('#newTodoBtn');
     const todoModal = document.querySelector('#todoModal');
     const overlay = document.querySelector('#overlay');
+    const todoModalTitle = document.querySelector('#todoModalTitle');
     const todoModalCloseBtn = document.querySelector('#todoModalCloseBtn');
     const todoName = document.querySelector('#todoName');
     const todoDetails = document.querySelector('#todoDetails');
     const todoDate = document.querySelector('#todoDate');
-    const addTodoBtn = document.querySelector('#addTodoBtn');
+    const submitTodoBtn = document.querySelector('#submitTodoBtn');
+    let targetTodo
 
     // METHODS
     function openTodoModal() {
@@ -317,6 +327,9 @@ const todoModalStuff = (() => {
         } else {
             todoModal.classList.remove('active');
             overlay.classList.remove('active');
+            todoName.value = ''
+            todoDetails.value = ''
+            todoDate.value = ''
         }
     }
 
@@ -326,8 +339,20 @@ const todoModalStuff = (() => {
         return (array.indexOf(title) >= 0) ? true : false;
     }
 
+    function editingTodo(name, details, date) {
+        todoModalTitle.textContent = 'Edit Todo'
+        submitTodoBtn.textContent = 'Change'
+        openTodoModal();
+        todoName.value = name
+        todoDetails.value = details
+        todoDate.value = date
+        targetTodo = currentTab.todos.filter(todo => (todo.title === name))[0]
+    }
+
     // EVENT LISTENERS
     newTodoBtn.addEventListener('click', () => {
+        todoModalTitle.textContent = 'New Todo'
+        submitTodoBtn.textContent = 'Add'
         openTodoModal();
     });
 
@@ -339,26 +364,32 @@ const todoModalStuff = (() => {
         closeTodoModal();
     });
 
-    addTodoBtn.addEventListener('click', e => {
+    submitTodoBtn.addEventListener('click', e => {
         e.preventDefault();
 
-        // todoName.value;
-        // todoDetails.value;
-        // todoDate.value;
+        // repurpose dates (var here or else date is not accessible)
+        // • '' = 'No date' (instead of 'Invalid date')
+        // • '2022-06-02' = 'Thu Jun 02 2022' (more readable)
+        if (todoDate.value === '') {
+            var date = 'No date';
+        } else {
+            var date = new Date(todoDate.value.split('-')).toDateString();
+        }
 
-        if (todoName.value === '') {
-            alert("Todo name can't be empty");
-            // map is returning an array of names
+        if (todoModalTitle.textContent === 'Edit Todo') {
+            editTodo(targetTodo, todoName.value, todoDetails.value, date)
+            renderTodos()
+            todoName.value = '';
+            todoDetails.value = '';
+            todoDate.value = '';
+            closeTodoModal();
+        }
+        else if (todoName.value === '') {
+            alert("Todo name can't be empty"); 
         } else if (checkDuplicate(all.todos.map(todo => todo.title), todoName.value)) {
             alert("Todo name must be unique");
         } else {
-            // using var here or else date is not accessible
-            if (todoDate.value === '') {
-                var date = 'No date';
-            } else {
-                // to turn "2022-06-02" -> 'Thu Jun 02 2022'
-                var date = new Date(todoDate.value.split('-')).toDateString();
-            }
+
             let newTodo =
                 createTodo(
                     todoName.value,
@@ -376,7 +407,6 @@ const todoModalStuff = (() => {
                 addTodo(newTodo);
                 all.todos.push(newTodo);
             }
-            saveProjects();
             renderTodos();
             todoName.value = '';
             todoDetails.value = '';
@@ -389,10 +419,11 @@ const todoModalStuff = (() => {
         openTodoModal,
         closeTodoModal,
         checkDuplicate,
+        editingTodo
     };
 })();
 
-// setting the current project
+// setting the current tab
 sidebar.addEventListener('click', (e) => {
     let target = e.target;
     let id = target.id;
