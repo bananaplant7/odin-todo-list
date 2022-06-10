@@ -1,3 +1,7 @@
+const allTab = document.querySelector('#all');
+const todayTab = document.querySelector('#today');
+const thisWeekTab = document.querySelector('#thisWeek');
+
 const todoContainer = document.querySelector('.todoContainer');
 
 const projectsContainer = document.querySelector('#projectsContainer');
@@ -79,7 +83,7 @@ function displayTodos() {
 
         let editTodoBtn = document.createElement('button');
         editTodoBtn.classList.add('editTodoBtn');
-        editTodoBtn.textContent = '\u270d'; 
+        editTodoBtn.textContent = '\u{1F4DD}'; 
 
         let deleteTodoBtn = document.createElement('button');
         deleteTodoBtn.classList.add('deleteTodoBtn');
@@ -104,6 +108,7 @@ function renderTodos() {
 
 renderTodos();
 
+// functionality to buttons on each todo
 todoContainer.addEventListener('click', (e) => {
     let targetType = e.target.classList[0];
     let targetID = e.target.parentElement.id;
@@ -152,7 +157,6 @@ todoContainer.addEventListener('click', (e) => {
     
 });
 //#endregion 
-
 
 //#region // PROJECT STUFF
 const createProject = (title) => {
@@ -216,12 +220,16 @@ projectsContainer.addEventListener('click', (e) => {
     let index = projects.findIndex(x => x.title === id);
 
     if (target.classList[0] === 'deleteProjectBtn') {
+        // remve proj & todos from this proj in the all tab, currentTab = all, render
         projects.splice(index, 1);
+        all.todos = all.todos.filter(todo => todo.origin !== id)
+        currentTab = all
+        allTab.classList.add('current')
+        renderTodos()
         renderProjects();
     }
 });
 //#endregion
-
 
 const projectModalStuff = (() => {
     // SELECTORS
@@ -230,7 +238,7 @@ const projectModalStuff = (() => {
     const overlay = document.querySelector('#overlay');
     const projectModalCloseBtn = document.querySelector('#projectModalCloseBtn');
     const projectName = document.querySelector('#projectName');
-    const addProjectBtn = document.querySelector('#addProjectBtn');
+    const submitProjectBtn = document.querySelector('#submitProjectBtn');
 
     // METHODS
     function openProjectModal() {
@@ -273,7 +281,7 @@ const projectModalStuff = (() => {
 
     // If title non-empty & non-duplicate, create new project & add to  
     // projects[], clear & display projects, clear form, close modal
-    addProjectBtn.addEventListener('click', e => {
+    submitProjectBtn.addEventListener('click', e => {
         e.preventDefault();
 
         let projectTitle = projectName.value;
@@ -376,16 +384,21 @@ const todoModalStuff = (() => {
             var date = new Date(todoDate.value.split('-')).toDateString();
         }
 
-        if (todoModalTitle.textContent === 'Edit Todo') {
-            editTodo(targetTodo, todoName.value, todoDetails.value, date)
-            renderTodos()
-            todoName.value = '';
-            todoDetails.value = '';
-            todoDate.value = '';
-            closeTodoModal();
-        }
-        else if (todoName.value === '') {
+        if (todoName.value === '') {
             alert("Todo name can't be empty"); 
+        }
+        else if (todoModalTitle.textContent === 'Edit Todo') {
+            if ( (todoName.value !== targetTodo.title) && 
+                 (checkDuplicate(all.todos.map(todo => todo.title), todoName.value)) ) {
+                    alert("Todo name must be unique");
+            } else {
+                editTodo(targetTodo, todoName.value, todoDetails.value, date)
+                renderTodos()
+                todoName.value = '';
+                todoDetails.value = '';
+                todoDate.value = '';
+                closeTodoModal();
+            }
         } else if (checkDuplicate(all.todos.map(todo => todo.title), todoName.value)) {
             alert("Todo name must be unique");
         } else {
