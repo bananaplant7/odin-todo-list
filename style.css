@@ -156,8 +156,9 @@ tab class & ignore the projectTitle class */
     font-size: 1.5rem;
 }
 
-.editTodoBtn {
-    font-size: 2rem;
+.deleteTodoBtn {
+    position: relative;
+    top: 1.5px;
 }
 
 /*#endregion*/ /**********/
