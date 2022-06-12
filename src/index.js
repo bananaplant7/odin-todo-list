@@ -1,3 +1,5 @@
+import { isToday, isThisWeek } from 'date-fns';
+
 const allTab = document.querySelector('#all');
 const todayTab = document.querySelector('#today');
 const thisWeekTab = document.querySelector('#thisWeek');
@@ -31,9 +33,9 @@ function addTodo(todo) {
 }
 
 function editTodo(todo, newTitle, newDesc, newDate) {
-    todo.title = newTitle
-    todo.desc = newDesc
-    todo.date = newDate
+    todo.title = newTitle;
+    todo.desc = newDesc;
+    todo.date = newDate;
 }
 
 function saveAllTab() {
@@ -83,7 +85,7 @@ function displayTodos() {
 
         let editTodoBtn = document.createElement('button');
         editTodoBtn.classList.add('editTodoBtn');
-        editTodoBtn.textContent = '\u{1F4DD}'; 
+        editTodoBtn.textContent = '\u{1F4DD}';
 
         let deleteTodoBtn = document.createElement('button');
         deleteTodoBtn.classList.add('deleteTodoBtn');
@@ -93,15 +95,15 @@ function displayTodos() {
         li.appendChild(title);
         li.appendChild(desc);
         li.appendChild(date);
-        li.appendChild(editTodoBtn)
-        li.appendChild(deleteTodoBtn)
+        li.appendChild(editTodoBtn);
+        li.appendChild(deleteTodoBtn);
         todoContainer.appendChild(li);
     });
 }
 
 function renderTodos() {
     saveAllTab();
-    saveProjects()
+    saveProjects();
     clearTodos();
     displayTodos();
 }
@@ -131,30 +133,39 @@ todoContainer.addEventListener('click', (e) => {
         if (targetTodo.date === 'No date') {
             var date = '';
         } else {
-            var date = new Date(targetTodo.date).toISOString().split('T')[0]
+            var date = new Date(targetTodo.date).toISOString().split('T')[0];
         }
-        todoModalStuff.editingTodo(targetTodo.title, targetTodo.desc, date)
+        todoModalStuff.editingTodo(targetTodo.title, targetTodo.desc, date);
 
     }
 
-    // if in all tab, remove from all tab. if not, remove from origin tab and all tab
     if (targetType === 'deleteTodoBtn') {
-        let targetOrigin = targetTodo.origin
-        let indexInAllTab = all.todos.findIndex(todo => (todo.title == targetID))
-        if (targetOrigin !== 'all') {
-            // finds the origin tab 
-            let originTab = projects.filter(project => (project.title === targetOrigin))[0]
-            // removes todo from origin tab by w/ index # & splice
-            let indexInOrigin = originTab.todos.findIndex(todo => (todo.title == targetID))
-            originTab.todos.splice(indexInOrigin, 1)
+        let targetOrigin = targetTodo.origin;
+        let indexInAllTab = all.todos.findIndex(todo => (todo.title == targetID));
+        let indexInCurrentTab = currentTab.todos.findIndex(todo => (todo.title == targetID));
+
+
+        if (targetOrigin === 'all') {
+            if (currentTab.title === 'today' || currentTab.title === 'thisWeek') {
+                currentTab.todos.splice(indexInCurrentTab, 1)
+            }
+        } else {
+            let originTab = projects.filter(project => (project.title === targetOrigin))[0];
+            let indexInOrigin = originTab.todos.findIndex(todo => (todo.title == targetID));
+
+            if (currentTab.title === 'today' || currentTab.title === 'thisWeek') {
+                currentTab.todos.splice(indexInCurrentTab, 1)
+                originTab.todos.splice(indexInOrigin, 1)
+            } else if (currentTab.title === 'all') {
+                originTab.todos.splice(indexInOrigin, 1)
+            } else {
+                originTab.todos.splice(indexInOrigin, 1)
+            }
         }
-        all.todos.splice(indexInAllTab,1)
-        renderTodos();
+        all.todos.splice(indexInAllTab, 1);
+        renderTodos()
     }
 
-
-
-    
 });
 //#endregion 
 
@@ -222,10 +233,10 @@ projectsContainer.addEventListener('click', (e) => {
     if (target.classList[0] === 'deleteProjectBtn') {
         // remve proj & todos from this proj in the all tab, currentTab = all, render
         projects.splice(index, 1);
-        all.todos = all.todos.filter(todo => todo.origin !== id)
-        currentTab = all
-        allTab.classList.add('current')
-        renderTodos()
+        all.todos = all.todos.filter(todo => todo.origin !== id);
+        currentTab = all;
+        allTab.classList.add('current');
+        renderTodos();
         renderProjects();
     }
 });
@@ -256,7 +267,7 @@ const projectModalStuff = (() => {
         } else {
             projectModal.classList.remove('active');
             overlay.classList.remove('active');
-            projectName.value = ''
+            projectName.value = '';
         }
     }
 
@@ -317,7 +328,7 @@ const todoModalStuff = (() => {
     const todoDetails = document.querySelector('#todoDetails');
     const todoDate = document.querySelector('#todoDate');
     const submitTodoBtn = document.querySelector('#submitTodoBtn');
-    let targetTodo
+    let targetTodo;
 
     // METHODS
     function openTodoModal() {
@@ -335,9 +346,9 @@ const todoModalStuff = (() => {
         } else {
             todoModal.classList.remove('active');
             overlay.classList.remove('active');
-            todoName.value = ''
-            todoDetails.value = ''
-            todoDate.value = ''
+            todoName.value = '';
+            todoDetails.value = '';
+            todoDate.value = '';
         }
     }
 
@@ -348,19 +359,19 @@ const todoModalStuff = (() => {
     }
 
     function editingTodo(name, details, date) {
-        todoModalTitle.textContent = 'Edit Todo'
-        submitTodoBtn.textContent = 'Change'
+        todoModalTitle.textContent = 'Edit Todo';
+        submitTodoBtn.textContent = 'Change';
         openTodoModal();
-        todoName.value = name
-        todoDetails.value = details
-        todoDate.value = date
-        targetTodo = currentTab.todos.filter(todo => (todo.title === name))[0]
+        todoName.value = name;
+        todoDetails.value = details;
+        todoDate.value = date;
+        targetTodo = currentTab.todos.filter(todo => (todo.title === name))[0];
     }
 
     // EVENT LISTENERS
     newTodoBtn.addEventListener('click', () => {
-        todoModalTitle.textContent = 'New Todo'
-        submitTodoBtn.textContent = 'Add'
+        todoModalTitle.textContent = 'New Todo';
+        submitTodoBtn.textContent = 'Add';
         openTodoModal();
     });
 
@@ -385,15 +396,15 @@ const todoModalStuff = (() => {
         }
 
         if (todoName.value === '') {
-            alert("Todo name can't be empty"); 
+            alert("Todo name can't be empty");
         }
         else if (todoModalTitle.textContent === 'Edit Todo') {
-            if ( (todoName.value !== targetTodo.title) && 
-                 (checkDuplicate(all.todos.map(todo => todo.title), todoName.value)) ) {
-                    alert("Todo name must be unique");
+            if ((todoName.value !== targetTodo.title) &&
+                (checkDuplicate(all.todos.map(todo => todo.title), todoName.value))) {
+                alert("Todo name must be unique");
             } else {
-                editTodo(targetTodo, todoName.value, todoDetails.value, date)
-                renderTodos()
+                editTodo(targetTodo, todoName.value, todoDetails.value, date);
+                renderTodos();
                 todoName.value = '';
                 todoDetails.value = '';
                 todoDate.value = '';
@@ -408,7 +419,7 @@ const todoModalStuff = (() => {
                     todoName.value,
                     todoDetails.value,
                     date,
-                    complete = false,
+                    false,  
                     currentTab.title
                 );
 
@@ -440,31 +451,49 @@ const todoModalStuff = (() => {
 sidebar.addEventListener('click', (e) => {
     let target = e.target;
     let id = target.id;
-    let tabs = document.querySelectorAll('.tab')
+    let tabs = document.querySelectorAll('.tab');
 
     // adding & removing hidden class to remove add todo btn in the today & 
     // this week tabs bc you should not be able to add todos in these tabs as
     // their contents should change dynamically w/ the date 
     if (target.classList[0] === 'tab') {
-        tabs.forEach(tab => tab.classList.remove('current'))
-        target.classList.add('current')
-        if (target.classList[1] === 'project') {
-            // this returns the project that matches the id
-            let selectedProj = projects.filter(project => (project.title === id))[0];
-            currentTab = selectedProj;
+        tabs.forEach(tab => tab.classList.remove('current'));
+        target.classList.add('current');
+
+    if (target.classList[1] === 'project') {
+        // this returns the project that matches the id
+        let selectedProj = projects.filter(project => (project.title === id))[0];
+        currentTab = selectedProj;
+        newTodoBtn.classList.remove('hidden');
+    } else {
+        if (id === 'all') {
+            currentTab = all;
             newTodoBtn.classList.remove('hidden');
+        } else if (id === 'today') {
+            currentTab = today;
+            newTodoBtn.classList.add('hidden');
         } else {
-            if (id === 'all') {
-                currentTab = all;
-                newTodoBtn.classList.remove('hidden');
-            } else if (id === 'today') {
-                currentTab = today;
-                newTodoBtn.classList.add('hidden');
-            } else {
-                currentTab = thisWeek;
-                newTodoBtn.classList.add('hidden');
-            }
+            currentTab = thisWeek;
+            newTodoBtn.classList.add('hidden');
         }
-        renderTodos();
+    }
+    console.log(currentTab)
+    renderTodos();
     }
 });
+
+function updateToday() {
+    let dueToday = all.todos.filter(todo => isToday(new Date(todo.date)))
+    today.todos = dueToday
+    renderTodos()
+}
+
+function updateThisWeek() {
+    let dueThisWeek = all.todos.filter(todo => isThisWeek(new Date(todo.date)))
+    thisWeek.todos = dueThisWeek
+    renderTodos()
+}
+
+todayTab.addEventListener('click', updateToday)
+
+thisWeekTab.addEventListener('click', updateThisWeek)
