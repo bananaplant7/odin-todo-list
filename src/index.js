@@ -42,6 +42,10 @@ function saveAllTab() {
     localStorage.setItem(LOCAL_STORAGE_ALL_KEY, JSON.stringify(all));
 }
 
+function saveProjects() {
+    localStorage.setItem(LOCAL_STORAGE_PROJECT_KEY, JSON.stringify(projects));
+}
+
 function clearTodos() {
     while (todoContainer.firstChild) {
         todoContainer.removeChild(todoContainer.firstChild);
@@ -144,178 +148,29 @@ todoContainer.addEventListener('click', (e) => {
         let indexInAllTab = all.todos.findIndex(todo => (todo.title == targetID));
         let indexInCurrentTab = currentTab.todos.findIndex(todo => (todo.title == targetID));
 
-
         if (targetOrigin === 'all') {
             if (currentTab.title === 'today' || currentTab.title === 'thisWeek') {
-                currentTab.todos.splice(indexInCurrentTab, 1)
+                currentTab.todos.splice(indexInCurrentTab, 1);
             }
         } else {
             let originTab = projects.filter(project => (project.title === targetOrigin))[0];
             let indexInOrigin = originTab.todos.findIndex(todo => (todo.title == targetID));
 
             if (currentTab.title === 'today' || currentTab.title === 'thisWeek') {
-                currentTab.todos.splice(indexInCurrentTab, 1)
-                originTab.todos.splice(indexInOrigin, 1)
+                currentTab.todos.splice(indexInCurrentTab, 1);
+                originTab.todos.splice(indexInOrigin, 1);
             } else if (currentTab.title === 'all') {
-                originTab.todos.splice(indexInOrigin, 1)
+                originTab.todos.splice(indexInOrigin, 1);
             } else {
-                originTab.todos.splice(indexInOrigin, 1)
+                originTab.todos.splice(indexInOrigin, 1);
             }
         }
         all.todos.splice(indexInAllTab, 1);
-        renderTodos()
+        renderTodos();
     }
 
 });
 //#endregion 
-
-//#region // PROJECT STUFF
-const createProject = (title) => {
-    return {
-        title, todos: []
-    };
-};
-
-function addProject(project) {
-    projects.push(project);
-}
-
-function saveProjects() {
-    localStorage.setItem(LOCAL_STORAGE_PROJECT_KEY, JSON.stringify(projects));
-}
-
-function clearProjects() {
-    while (projectsContainer.firstChild) {
-        projectsContainer.removeChild(projectsContainer.firstChild);
-    }
-}
-
-/* <button class="project" id='project.title'>
-    <div class="projectTitle">project.title</div> <button class="deleteProjectBtn">&times;</button>
-   </button> */
-function displayProjects() {
-    projects.forEach(project => {
-        let btn = document.createElement('button');
-        btn.classList.add('tab');
-        btn.classList.add('project');
-        btn.id = project.title;
-
-        let projectTitle = document.createElement('div');
-        projectTitle.classList.add('projectTitle');
-        projectTitle.textContent = project.title;
-
-        let deleteProjectBtn = document.createElement('button');
-        deleteProjectBtn.classList.add('deleteProjectBtn');
-        deleteProjectBtn.textContent = '\u{1F5D1}';
-
-        btn.appendChild(projectTitle);
-        btn.appendChild(deleteProjectBtn);
-
-        projectsContainer.appendChild(btn);
-    });
-}
-
-function renderProjects() {
-    saveProjects();
-    clearProjects();
-    displayProjects();
-}
-
-renderProjects();
-
-projectsContainer.addEventListener('click', (e) => {
-    // find the id of parent -> index number -> modify array -> render
-    let target = e.target;
-    let parent = target.parentElement;
-    let id = parent.id;
-    let index = projects.findIndex(x => x.title === id);
-
-    if (target.classList[0] === 'deleteProjectBtn') {
-        // remve proj & todos from this proj in the all tab, currentTab = all, render
-        projects.splice(index, 1);
-        all.todos = all.todos.filter(todo => todo.origin !== id);
-        currentTab = all;
-        allTab.classList.add('current');
-        renderTodos();
-        renderProjects();
-    }
-});
-//#endregion
-
-const projectModalStuff = (() => {
-    // SELECTORS
-    const newProjectBtn = document.querySelector('#newProjectBtn');
-    const projectModal = document.querySelector('#projectModal');
-    const overlay = document.querySelector('#overlay');
-    const projectModalCloseBtn = document.querySelector('#projectModalCloseBtn');
-    const projectName = document.querySelector('#projectName');
-    const submitProjectBtn = document.querySelector('#submitProjectBtn');
-
-    // METHODS
-    function openProjectModal() {
-        if (projectModal == null) {
-            return;
-        } else {
-            projectModal.classList.add('active');
-            overlay.classList.add('active');
-        }
-    }
-
-    function closeProjectModal() {
-        if (projectModal == null) {
-            return;
-        } else {
-            projectModal.classList.remove('active');
-            overlay.classList.remove('active');
-            projectName.value = '';
-        }
-    }
-
-    // consumes array of strings & string and produces 
-    // true or false to if that string is a duplicate
-    function checkDuplicate(array, title) {
-        return (array.indexOf(title) >= 0) ? true : false;
-    }
-
-    // EVENT LISTENERS
-    newProjectBtn.addEventListener('click', () => {
-        openProjectModal();
-    });
-
-    projectModalCloseBtn.addEventListener('click', () => {
-        closeProjectModal();
-    });
-
-    overlay.addEventListener('click', () => {
-        closeProjectModal();
-    });
-
-    // If title non-empty & non-duplicate, create new project & add to  
-    // projects[], clear & display projects, clear form, close modal
-    submitProjectBtn.addEventListener('click', e => {
-        e.preventDefault();
-
-        let projectTitle = projectName.value;
-
-        if (projectTitle === '') {
-            alert("Project name can't be empty");
-        } else if (checkDuplicate(projects.map(project => project.title), projectTitle)) {
-            alert("Project name must be unique");
-        } else {
-            let newProject = createProject(projectName.value);
-            addProject(newProject);
-            renderProjects();
-            projectName.value = '';
-            closeProjectModal();
-        }
-    });
-
-    return {
-        openProjectModal,
-        closeProjectModal,
-        checkDuplicate,
-    };
-})();
 
 const todoModalStuff = (() => {
     // SELECTORS
@@ -419,7 +274,7 @@ const todoModalStuff = (() => {
                     todoName.value,
                     todoDetails.value,
                     date,
-                    false,  
+                    false,
                     currentTab.title
                 );
 
@@ -447,6 +302,152 @@ const todoModalStuff = (() => {
     };
 })();
 
+//#region // PROJECT STUFF
+const createProject = (title) => {
+    return {
+        title, todos: []
+    };
+};
+
+function addProject(project) {
+    projects.push(project);
+}
+
+function clearProjects() {
+    while (projectsContainer.firstChild) {
+        projectsContainer.removeChild(projectsContainer.firstChild);
+    }
+}
+
+/* <button class="project" id='project.title'>
+    <div class="projectTitle">project.title</div> <button class="deleteProjectBtn">&times;</button>
+   </button> */
+function displayProjects() {
+    projects.forEach(project => {
+        let btn = document.createElement('button');
+        btn.classList.add('tab');
+        btn.classList.add('project');
+        btn.id = project.title;
+
+        let projectTitle = document.createElement('div');
+        projectTitle.classList.add('projectTitle');
+        projectTitle.textContent = project.title;
+
+        let deleteProjectBtn = document.createElement('button');
+        deleteProjectBtn.classList.add('deleteProjectBtn');
+        deleteProjectBtn.textContent = '\u{1F5D1}';
+
+        btn.appendChild(projectTitle);
+        btn.appendChild(deleteProjectBtn);
+
+        projectsContainer.appendChild(btn);
+    });
+}
+
+function renderProjects() {
+    saveProjects();
+    clearProjects();
+    displayProjects();
+}
+
+renderProjects();
+
+projectsContainer.addEventListener('click', (e) => {
+    // find the id of parent -> index number -> modify array -> render
+    let target = e.target;
+    let parent = target.parentElement;
+    let id = parent.id;
+    let index = projects.findIndex(x => x.title === id);
+
+    if (target.classList[0] === 'deleteProjectBtn') {
+        let tabs = document.querySelectorAll('.tab');
+        // remve proj & todos from this proj in the all tab, currentTab = all, render
+        projects.splice(index, 1);
+        all.todos = all.todos.filter(todo => todo.origin !== id);
+        currentTab = all;
+        tabs.forEach(tab => tab.classList.remove('current'))
+        allTab.classList.add('current');
+        renderTodos();
+        renderProjects();
+    }
+});
+//#endregion
+
+const projectModalStuff = (() => {
+    // SELECTORS
+    const newProjectBtn = document.querySelector('#newProjectBtn');
+    const projectModal = document.querySelector('#projectModal');
+    const overlay = document.querySelector('#overlay');
+    const projectModalCloseBtn = document.querySelector('#projectModalCloseBtn');
+    const projectName = document.querySelector('#projectName');
+    const submitProjectBtn = document.querySelector('#submitProjectBtn');
+
+    // METHODS
+    function openProjectModal() {
+        if (projectModal == null) {
+            return;
+        } else {
+            projectModal.classList.add('active');
+            overlay.classList.add('active');
+        }
+    }
+
+    function closeProjectModal() {
+        if (projectModal == null) {
+            return;
+        } else {
+            projectModal.classList.remove('active');
+            overlay.classList.remove('active');
+            projectName.value = '';
+        }
+    }
+
+    // consumes array of strings & string and produces 
+    // true or false to if that string is a duplicate
+    function checkDuplicate(array, title) {
+        return (array.indexOf(title) >= 0) ? true : false;
+    }
+
+    // EVENT LISTENERS
+    newProjectBtn.addEventListener('click', () => {
+        openProjectModal();
+    });
+
+    projectModalCloseBtn.addEventListener('click', () => {
+        closeProjectModal();
+    });
+
+    overlay.addEventListener('click', () => {
+        closeProjectModal();
+    });
+
+    // If title non-empty & non-duplicate, create new project & add to  
+    // projects[], clear & display projects, clear form, close modal
+    submitProjectBtn.addEventListener('click', e => {
+        e.preventDefault();
+
+        let projectTitle = projectName.value;
+
+        if (projectTitle === '') {
+            alert("Project name can't be empty");
+        } else if (checkDuplicate(projects.map(project => project.title), projectTitle)) {
+            alert("Project name must be unique");
+        } else {
+            let newProject = createProject(projectName.value);
+            addProject(newProject);
+            renderProjects();
+            projectName.value = '';
+            closeProjectModal();
+        }
+    });
+
+    return {
+        openProjectModal,
+        closeProjectModal,
+        checkDuplicate,
+    };
+})();
+
 // setting the current tab
 sidebar.addEventListener('click', (e) => {
     let target = e.target;
@@ -460,40 +461,39 @@ sidebar.addEventListener('click', (e) => {
         tabs.forEach(tab => tab.classList.remove('current'));
         target.classList.add('current');
 
-    if (target.classList[1] === 'project') {
-        // this returns the project that matches the id
-        let selectedProj = projects.filter(project => (project.title === id))[0];
-        currentTab = selectedProj;
-        newTodoBtn.classList.remove('hidden');
-    } else {
-        if (id === 'all') {
-            currentTab = all;
+        if (target.classList[1] === 'project') {
+            // this returns the project that matches the id
+            let selectedProj = projects.filter(project => (project.title === id))[0];
+            currentTab = selectedProj;
             newTodoBtn.classList.remove('hidden');
-        } else if (id === 'today') {
-            currentTab = today;
-            newTodoBtn.classList.add('hidden');
         } else {
-            currentTab = thisWeek;
-            newTodoBtn.classList.add('hidden');
+            if (id === 'all') {
+                currentTab = all;
+                newTodoBtn.classList.remove('hidden');
+            } else if (id === 'today') {
+                currentTab = today;
+                newTodoBtn.classList.add('hidden');
+            } else {
+                currentTab = thisWeek;
+                newTodoBtn.classList.add('hidden');
+            }
         }
-    }
-    console.log(currentTab)
-    renderTodos();
+        renderTodos();
     }
 });
 
 function updateToday() {
-    let dueToday = all.todos.filter(todo => isToday(new Date(todo.date)))
-    today.todos = dueToday
-    renderTodos()
+    let dueToday = all.todos.filter(todo => isToday(new Date(todo.date)));
+    today.todos = dueToday;
+    renderTodos();
 }
 
 function updateThisWeek() {
-    let dueThisWeek = all.todos.filter(todo => isThisWeek(new Date(todo.date)))
-    thisWeek.todos = dueThisWeek
-    renderTodos()
+    let dueThisWeek = all.todos.filter(todo => isThisWeek(new Date(todo.date)));
+    thisWeek.todos = dueThisWeek;
+    renderTodos();
 }
 
-todayTab.addEventListener('click', updateToday)
+todayTab.addEventListener('click', updateToday);
 
-thisWeekTab.addEventListener('click', updateThisWeek)
+thisWeekTab.addEventListener('click', updateThisWeek);
