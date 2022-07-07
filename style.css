@@ -30,10 +30,6 @@ header {
 
 }
 
-.headerIcon {
-    margin-bottom: 9px;
-}
-
 main {
     height: 90vh;
     display: flex;
